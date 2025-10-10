@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lost & Found AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+        }
+
+        .btn-secondary:hover {
+            background-color: white;
+            color: #333;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+        }
+
+        main {
+            padding: 2rem 0;
+        }
+
+        .hero {
+            text-align: center;
+            background: white;
+            padding: 3rem 0;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .action-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .card h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .form-control {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .results {
+            margin-top: 2rem;
+        }
+
+        .item-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .item-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .item-card h4 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-meta {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .similarity-score {
+            background: #e8f5e8;
+            color: #2d5a2d;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .user-info {
+            color: white;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: none;
+            border: 1px solid white;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #333;
+        }
+
+        .error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .success {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">🔍 Lost & Found AI</div>
+                <div class="auth-section">
+                    <div class="auth-buttons" id="authButtons">
+                        <button class="btn btn-secondary" onclick="openLoginModal()">Login</button>
+                        <button class="btn btn-primary" onclick="openRegisterModal()">Register</button>
+                    </div>
+                    <div class="user-info hidden" id="userInfo">
+                        <span id="userName"></span>
+                        <button class="logout-btn" onclick="logout()">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Hero Section -->
+            <div class="hero">
+                <h1>Find Your Lost Items with AI</h1>
+                <p>Use advanced AI matching to connect lost items with their owners</p>
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-section">
+                <h2>Search for Items</h2>
+                <form class="search-form" onsubmit="searchItems(event)">
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="searchQuery" 
+                        placeholder="Describe the item you're looking for..." 
+                        required>
+                    <select class="form-control" id="searchType">
+                        <option value="both">All Items</option>
+                        <option value="lost">Lost Items</option>
+                        <option value="found">Found Items</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+                <div id="searchResults" class="results"></div>
+            </div>
+
+            <!-- Action Cards -->
+            <div class="action-cards">
+                <div class="card">
+                    <h3>📢 Report Lost Item</h3>
+                    <p>Lost something? Describe it and let AI help you find potential matches.</p>
+                    <button class="btn btn-success" onclick="openLostItemModal()">Report Lost Item</button>
+                </div>
+                
+                <div class="card">
+                    <h3>🎯 Report Found Item</h3>
+                    <p>Found something? Help return it to its owner with AI-powered matching.</p>
+                    <button class="btn btn-info" onclick="openFoundItemModal()">Report Found Item</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h2>Login</h2>
+            <form onsubmit="login(event)">
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <div id="loginError"></div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            <h2>Register</h2>
+            <form onsubmit="register(event)">
+                <div class="form-group">
+                    <label for="registerName">Name:</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email:</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone">Phone (optional):</label>
+                    <input type="tel" id="registerPhone">
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password:</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+            <div id="registerError"></div>
+        </div>
+    </div>
+
+    <!-- Lost Item Modal -->
+    <div id="lostItemModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('lostItemModal')">&times;</span>
+            <h2>Report Lost Item</h2>
+            <form onsubmit="reportLostItem(event)">
+                <div class="form-group">
+                    <label for="lostTitle">Title:</label>
+                    <input type="text" id="lostTitle" required placeholder="e.g., iPhone 12 Pro">
+                </div>
+                <div class="form-group">
+                    <label for="lostDescription">Description:</label>
+                    <textarea id="lostDescription" required placeholder="Describe your lost item in detail..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="lostCategory">Category:</label>
+                    <select id="lostCategory" required>
+                        <option value="">Select category</option>
+                        <option value="electronics">Electronics</option>
+                        <option value="jewelry">Jewelry</option>
+                        <option value="clothing">Clothing</option>
+                        <option value="bag">Bag/Purse</option>
+                        <option value="keys">Keys</option>
+                        <option value="documents">Documents</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="lostColor">Color (optional):</label>
+                    <input type="text" id="lostColor" placeholder="e.g., Black">
+                </div>
+                <div class="form-group">
+                    <label for="lostBrand">Brand (optional):</label>
+                    <input type="text" id="lostBrand" placeholder="e.g., Apple">
+                </div>
+                <div class="form-group">
+                    <label for="lostImage">Upload an image (optional):</label>
+                    <input type="file" id="lostImage" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label for="lostLocation">Location where lost:</label>
+                    <input type="text" id="lostLocation" required placeholder="e.g., Central Park, NYC">
+                </div>
+                <div class="form-group">
+                    <label for="lostDate">Date lost:</label>
+                    <input type="date" id="lostDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="lostReward">Reward amount (optional):</label>
+                    <input type="number" id="lostReward" min="0" step="0.01" placeholder="0.00">
+                </div>
+                <button type="submit" class="btn btn-success">Report Lost Item</button>
+            </form>
+            <div id="lostItemError"></div>
+        </div>
+    </div>
+
+    <!-- Found Item Modal -->
+    <div id="foundItemModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('foundItemModal')">&times;</span>
+            <h2>Report Found Item</h2>
+            <form onsubmit="reportFoundItem(event)">
+                <div class="form-group">
+                    <label for="foundTitle">Title:</label>
+                    <input type="text" id="foundTitle" required placeholder="e.g., iPhone with blue case">
+                </div>
+                <div class="form-group">
+                    <label for="foundDescription">Description:</label>
+                    <textarea id="foundDescription" required placeholder="Describe the found item in detail..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="foundCategory">Category:</label>
+                    <select id="foundCategory" required>
+                        <option value="">Select category</option>
+                        <option value="electronics">Electronics</option>
+                        <option value="jewelry">Jewelry</option>
+                        <option value="clothing">Clothing</option>
+                        <option value="bag">Bag/Purse</option>
+                        <option value="keys">Keys</option>
+                        <option value="documents">Documents</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="foundColor">Color (optional):</label>
+                    <input type="text" id="foundColor" placeholder="e.g., Black">
+                </div>
+                <div class="form-group">
+                    <label for="foundBrand">Brand (optional):</label>
+                    <input type="text" id="foundBrand" placeholder="e.g., Apple">
+                </div>
+                <div class="form-group">
+                    <label for="foundImage">Upload an image (optional):</label>
+                    <input type="file" id="foundImage" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label for="foundLocation">Location where found:</label>
+                    <input type="text" id="foundLocation" required placeholder="e.g., Central Park bench">
+                </div>
+                <div class="form-group">
+                    <label for="foundDate">Date found:</label>
+                    <input type="date" id="foundDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="foundCondition">Condition:</label>
+                    <select id="foundCondition" required>
+                        <option value="">Select condition</option>
+                        <option value="excellent">Excellent</option>
+                        <option value="good">Good</option>
+                        <option value="fair">Fair</option>
+                        <option value="poor">Poor</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-info">Report Found Item</button>
+            </form>
+            <div id="foundItemError"></div>
+        </div>
+    </div>
+
+    <!-- Claim Modal -->
+    <div id="claimModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('claimModal')">&times;</span>
+            <h2>Claim Item</h2>
+            <div id="claimStepDescribe">
+                <p>Briefly describe your item so we can generate a verification challenge.</p>
+                <div class="form-group">
+                    <label for="claimDescription">Your description:</label>
+                    <textarea id="claimDescription" placeholder="e.g., Black iPhone with a blue case and a small scratch near the camera"></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="initiateClaim()">Generate Challenge</button>
+                <div id="claimInitError"></div>
+            </div>
+            <div id="claimStepChallenge" class="hidden">
+                <p id="claimQuestionText"></p>
+                <div id="claimOptions" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:12px 0;"></div>
+                <button class="btn btn-success" onclick="verifyClaim()">Submit Answer</button>
+                <div id="claimVerifyError"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
