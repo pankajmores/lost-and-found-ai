@@ -32,6 +32,84 @@ An intelligent lost and found system that uses Natural Language Processing (NLP)
 - **Cosine Similarity**: Calculate similarity between item descriptions
 - **Multi-factor Matching**: Combine text similarity with category, color, location, and date filters
 
+## Project Structure and Responsibilities
+
+- backend/app/app.py
+  - Purpose: Main Flask application entry. Loads configuration and env vars, initializes SQLAlchemy and CORS, sets DB path, registers routes.
+  - Key endpoints:
+    - POST /api/register, POST /api/login
+    - POST /api/lost-items, GET /api/lost-items
+    - POST /api/found-items, GET /api/found-items
+    - GET /api/search
+    - POST /api/claims/initiate, POST /api/claims/verify
+    - GET /api/uploads/<filename>
+    - GET /api/health
+  - Utilities: JWT generation/verification, simple SQLite "migration" to add new columns, image upload handling with validation.
+
+- backend/models/models.py
+  - Purpose: Database models (SQLAlchemy) and serialization helpers.
+  - Models:
+    - User: authentication and profile fields
+    - LostItem: lost item details, image_url, optional embedding storage
+    - FoundItem: found item details, image_url, optional embedding storage
+    - Match: potential match records between lost/found items
+    - Claim: image-based verification challenges for claimants
+  - Each model exposes to_dict() for API responses.
+
+- backend/services/
+  - simple_matching_service.py: Default matching service used by the app; builds simple text representations via simple_nlp_service and applies metadata filters (category, color similarity, date and location checks).
+  - matching_service.py: Advanced embedding-based matching (optional) via nlp_service; keeps/stores embeddings on models.
+  - simple_nlp_service.py: Lightweight text representation + similarity scoring without heavy ML dependencies.
+  - nlp_service.py: Advanced NLP/embedding hooks (use when adding sentence-transformers or similar libraries).
+  - notification_service.py: Email notification utilities (stubs/placeholders unless configured).
+
+- backend/instance/uploads
+  - Purpose: Local storage for uploaded images. Files are served through GET /api/uploads/<filename>.
+
+- backend/routes/
+  - Placeholder for future Flask Blueprints (currently unused).
+
+- backend/utils/
+  - Placeholder for helper utilities (if/when added).
+
+- frontend/index.html
+  - Purpose: Web UI with modals for login, registration, reporting lost/found items (with image upload), and the claim challenge flow.
+
+- frontend/app.js
+  - Purpose: Client-side logic. Manages auth, sends requests, handles multipart/form-data uploads, renders search results, opens claim modals, initiates/validates claim challenges.
+
+- database/lost_and_found.db
+  - Purpose: SQLite database file (created automatically). You can replace with another RDBMS by changing SQLALCHEMY_DATABASE_URI.
+
+- docs/
+  - Purpose: Documentation and design notes (if present).
+
+- tests/
+  - Purpose: Test scaffolding and any sample scripts (if present).
+
+- requirements.txt
+  - Purpose: Python dependencies.
+
+- .env
+  - Purpose: Environment configuration (secrets, DB path, thresholds). Do not commit sensitive values.
+
+- README.md
+  - Purpose: Project documentation (you are here).
+
+## Modules and What They’re Used For
+
+Backend runtime dependencies (from requirements.txt):
+- flask: Web framework for building the API server
+- flask-sqlalchemy: ORM for modeling and DB access
+- flask-cors: Cross-Origin Resource Sharing for the frontend to reach the API
+- python-dotenv: Load configuration from .env files
+- bcrypt: Hash and verify user passwords securely
+- pyjwt: Issue and verify JWT access tokens for auth
+
+Notes:
+- The default matching path uses simple_matching_service + simple_nlp_service, which do not require heavy ML packages.
+- The matching_service + nlp_service layer is designed for embedding-based matching if you later add ML dependencies (e.g., sentence-transformers, numpy, scikit-learn). These are not required by default and are not listed in requirements.txt.
+
 ## Setup Instructions
 
 ### 1. Clone the Repository
